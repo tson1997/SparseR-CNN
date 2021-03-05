@@ -8,7 +8,7 @@ SparseRCNN Training Script.
 
 This script is a simplified version of the training script in detectron2/tools.
 """
-
+import logging
 import os
 import itertools
 import time
@@ -25,6 +25,12 @@ from detectron2.evaluation import COCOEvaluator, verify_results
 from detectron2.solver.build import maybe_add_gradient_clipping
 
 from sparsercnn import SparseRCNNDatasetMapper, add_sparsercnn_config
+
+
+from detectron2.data.datasets import register_coco_instances
+from detectron2.utils.logger import setup_logger
+
+logger = logging.getLogger("detectron2")
 
 
 class Trainer(DefaultTrainer):
@@ -129,6 +135,22 @@ def main(args):
 
 
 if __name__ == "__main__":
+    register_coco_instances(
+        "dla_train",
+        {},
+        "/content/train.json",
+        "/content/train"
+    )
+
+    register_coco_instances(
+        "dla_val",
+        {},
+        "/content/val.json",
+        "/content/valid"
+    )
+
+    metadata_train = MetadataCatalog.get("dla_train")
+    metadata_val = MetadataCatalog.get("dla_val")
     args = default_argument_parser().parse_args()
     print("Command Line Args:", args)
     launch(
